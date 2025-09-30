@@ -3,7 +3,7 @@ name: Build React to APK
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
 
 jobs:
@@ -25,23 +25,27 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # 4. Build React
+      # 4. Update Browserslist DB (biar nggak warning)
+      - name: Update Browserslist DB
+        run: npx browserslist@latest --update-db
+
+      # 5. Build React
       - name: Build React App
         run: npm run build
 
-      # 5. Install Capacitor CLI
+      # 6. Install Capacitor CLI
       - name: Install Capacitor
         run: npm install @capacitor/core @capacitor/cli --save
 
-      # 6. Init Capacitor
+      # 7. Init Capacitor
       - name: Init Capacitor
         run: npx cap init react-attendance com.example.reactattendance --web-dir=build
 
-      # 7. Add Android platform
+      # 8. Add Android platform
       - name: Add Android platform
         run: npx cap add android
 
-      # 8. Setup Java + Android SDK
+      # 9. Setup Java + Android SDK
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
@@ -51,15 +55,15 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      # 9. Build APK
+      # 10. Build APK
       - name: Build APK
         run: |
           cd android
           ./gradlew assembleDebug
 
-      # 10. Upload APK
+      # 11. Upload APK
       - name: Upload APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: react-attendance-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
